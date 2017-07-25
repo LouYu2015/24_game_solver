@@ -40,7 +40,11 @@ def evaluate_operation(op, a, b):
     if op == OP_MUL: return a * b
 
     try:
-        if op == OP_POW: return a ** b
+        if op == OP_POW:
+            if b > 30:
+                return float("NaN")
+            else:
+                return a ** b
         if op == OP_DIV: return a / b
     except ZeroDivisionError:
         return float("NaN")
