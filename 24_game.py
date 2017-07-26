@@ -127,6 +127,7 @@ class Node:
             left, right = right, left
 
         self._value = value
+        self._str_cache = None
         self.left = left
         self.right = right
         self.op = op
@@ -145,6 +146,11 @@ class Node:
         return self._value
 
     def __str__(self):
+    	if self._str_cache is None:
+    		self._str_cache = self._str()
+    	return self._str_cache
+
+    def _str(self):
         if self.op == OP_CONST:
             return str(self._value)
         elif self.op in unary_operators:
@@ -287,7 +293,9 @@ def main():
         unary_operators += _unary_operators
         print("Unary operator enabled")
 
-        unary_operators_allowed = select_int("Number of unary operators allowed", default=1)
+        print()
+
+        unary_operators_allowed = select_int("Number of unary operators allowed:", default=1)
         print("%d unary operators allowed" % unary_operators_allowed)
     else:
         print("Unary operator disabled")
