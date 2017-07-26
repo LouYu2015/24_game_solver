@@ -50,6 +50,18 @@ def evaluate_operation(op, a, b):
         return float("NaN")
 
 
+def fit_to_int(x, eps=1e-9):
+    try:
+        if abs(round(x) - x) <= eps:
+            return round(x)
+        else:
+            return x
+    except ValueError:
+        return float("NaN")
+    except TypeError:
+        return float("NaN")
+
+
 class Node:
     def __init__(self, value=None, left=None, right=None, op=OP_CONST):
         if op != OP_CONST and is_operator_commutative[op] \
@@ -66,6 +78,7 @@ class Node:
         if self._value is None:
             assert self.op != OP_CONST
             self._value = evaluate_operation(self.op, self.left.value, self.right.value)
+            self._value = fit_to_int(self._value)
         return self._value
 
     def __str__(self):
@@ -197,23 +210,26 @@ def main():
 
     enumerate_all = select_yes_no("Enumerate all target?")
     if enumerate_all:
-        callback = CallbackAllTarget()
         print("Enumerate all targets")
     else:
         print("Just solve one target")
 
     print()
 
-    target = 24
+    if not enumerate_all:
+        target = select_int("Enter a target:", default=24)
+        callback = CallbackFindTarget(target=target)
+
+        print("Target is %d" % target)
+        print()
 
     while True:
         print("--------------------")
-        if not enumerate_all:
-            target = select_int("Enter a target:", default=target)
-            callback = CallbackFindTarget(target=target)
 
-            print("Target is %d" % target)
-            print()
+        if enumerate_all:
+            callback = CallbackAllTarget()
+        else:
+            callback = CallbackFindTarget(target=target)
 
         inputs = [int(i) for i in input("Enter some numbers:").split(" ")]
         node_list = [Node(value=i) for i in inputs]
