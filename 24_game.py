@@ -48,11 +48,11 @@ priority_of_operator = {OP_ADD: 0,
                         OP_MUL: 1,
                         OP_DIV: 1,
                         OP_POW: 2,
-                        OP_FACT: 3,
-                        OP_SQRT: 4,
-                        OP_LOG: 4,
-                        OP_C: 4,
-                        OP_P: 4,
+                        OP_LOG: 3,
+                        OP_C: 3,
+                        OP_P: 3,
+                        OP_SQRT: 3,
+                        OP_FACT: 4,
                         OP_CONST: 5}
 
 is_operator_commutative = {OP_ADD: True,
@@ -63,6 +63,17 @@ is_operator_commutative = {OP_ADD: True,
                            OP_LOG: False,
                            OP_C: False,
                            OP_P: False}
+
+need_brackets = {OP_ADD: True,
+                 OP_SUB: True,
+                 OP_MUL: True,
+                 OP_DIV: True,
+                 OP_POW: True,
+                 OP_FACT: True,
+                 OP_SQRT: False,
+                 OP_LOG: False,
+                 OP_C: False,
+                 OP_P: False}
 
 
 def evaluate_operation(op, a, b=None):
@@ -139,7 +150,8 @@ class Node:
         elif self.op in unary_operators:
             str_left = str(self.left)
 
-            if priority_of_operator[self.left.op] < priority_of_operator[self.op]:
+            if need_brackets[self.op] \
+            		and priority_of_operator[self.left.op] < priority_of_operator[self.op]:
                 str_left = "(" + str_left + ")"
 
             return symbol_of_operator[self.op] % str_left
@@ -147,12 +159,14 @@ class Node:
             str_left = str(self.left)
             str_right = str(self.right)
 
-            if priority_of_operator[self.left.op] < priority_of_operator[self.op]:
+            if need_brackets[self.op] \
+            		and priority_of_operator[self.left.op] < priority_of_operator[self.op]:
                 str_left = "(" + str_left + ")"
 
-            if priority_of_operator[self.right.op] < priority_of_operator[self.op] \
-                or (priority_of_operator[self.right.op] == priority_of_operator[self.op]
-                    and not is_operator_commutative[self.op]):
+            if need_brackets[self.op] \
+            		and (priority_of_operator[self.right.op] < priority_of_operator[self.op] \
+                	or (priority_of_operator[self.right.op] == priority_of_operator[self.op]
+                    and not is_operator_commutative[self.op])):
                 str_right = "(" + str_right + ")"
 
             return symbol_of_operator[self.op] % (str_left, str_right)
@@ -272,8 +286,13 @@ def main():
     if select_yes_no("Allow unary operator?"):
         unary_operators += _unary_operators
         print("Unary operator enabled")
+
+        unary_operators_allowed = select_int("Number of unary operators allowed", default=1)
+        print("%d unary operators allowed" % unary_operators_allowed)
     else:
         print("Unary operator disabled")
+
+        unary_operators_allowed = 0
 
     print()
 
@@ -305,7 +324,7 @@ def main():
 
         print()
         start_time = time.time()
-        enumerate_nodes(node_list, callback, max_depth=len(node_list))
+        enumerate_nodes(node_list, callback, max_depth=len(node_list)-1+unary_operators_allowed)
         end_time = time.time()
 
         callback.show(execution_time=end_time - start_time)
