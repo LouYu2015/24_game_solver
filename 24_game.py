@@ -90,25 +90,11 @@ class Node:
 
             if priority_of_operator[self.left.op] < priority_of_operator[self.op]:
                 str_left = "(" + str_left + ")"
-            # str_left = "(" + str_left + ")"
 
             if priority_of_operator[self.right.op] < priority_of_operator[self.op] \
                 or (priority_of_operator[self.right.op] == priority_of_operator[self.op]
                     and not is_operator_commutative[self.op]):
                 str_right = "(" + str_right + ")"
-            # str_right = "(" + str_right + ")"
-
-            return str_left + symbol_of_operator[self.op] + str_right
-
-    def str2(self):
-        if self.op == OP_CONST:
-            return str(self._value)
-        else:
-            str_left = self.left.str2()
-            str_right = self.right.str2()
-
-            str_left = "(" + str_left + ")"
-            str_right = "(" + str_right + ")"
 
             return str_left + symbol_of_operator[self.op] + str_right
 
