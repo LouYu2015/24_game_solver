@@ -3,35 +3,39 @@ import time
 import math
 
 # Operators
-OP_CONST = 0
-OP_ADD = 1
-OP_SUB = 2
-OP_MUL = 3
-OP_DIV = 4
-OP_POW = 5
+OP_CONST = 0  # Constant
+OP_ADD = 1  # Addition
+OP_SUB = 2  # Subtraction
+OP_MUL = 3  # Multiplication
+OP_DIV = 4  # Divition
+OP_POW = 5  # Exponentiation
 
-OP_SQRT = 6
-OP_FACT = 7
-OP_LOG = 8
-OP_C = 9
-OP_P = 10
+OP_SQRT = 6  # Squreroot
+OP_FACT = 7  # Factorial
+OP_LOG = 8  # Logarithm
+OP_C = 9  # Combinations
+OP_P = 10  # Permutations
 
-
+# List of basic operators
 operators = [OP_ADD,
              OP_SUB,
              OP_MUL,
              OP_DIV]
 
+# List of advanced operators
 advanced_operators = [OP_POW,
                       OP_LOG,
                       OP_C,
                       OP_P]
 
+# List of unary operators
 _unary_operators = [OP_SQRT,
                     OP_FACT]
 
+# List of enabled unary operators
 unary_operators = []
 
+# Symbol of operators
 symbol_of_operator = {OP_ADD: "%s+%s",
                       OP_SUB: "%s-%s",
                       OP_MUL: "%s*%s",
@@ -43,6 +47,7 @@ symbol_of_operator = {OP_ADD: "%s+%s",
                       OP_C: "C(%s, %s)",
                       OP_P: "P(%s, %s)"}
 
+# Priority of operators
 priority_of_operator = {OP_ADD: 0,
                         OP_SUB: 0,
                         OP_MUL: 1,
@@ -55,6 +60,7 @@ priority_of_operator = {OP_ADD: 0,
                         OP_FACT: 4,
                         OP_CONST: 5}
 
+# Whether operator is commutative
 is_operator_commutative = {OP_ADD: True,
                            OP_SUB: False,
                            OP_MUL: True,
@@ -64,6 +70,7 @@ is_operator_commutative = {OP_ADD: True,
                            OP_C: False,
                            OP_P: False}
 
+# Whether inside bracket is needed when rendering
 need_brackets = {OP_ADD: True,
                  OP_SUB: True,
                  OP_MUL: True,
@@ -85,6 +92,9 @@ def combination(n, k):
 
 
 def evaluate_operation(op, a, b=None):
+	"""
+	Evaluate an operation on a and b.
+	"""
     if op == OP_ADD: return a + b
     if op == OP_SUB: return a - b
     if op == OP_MUL: return a * b
@@ -116,6 +126,9 @@ def evaluate_operation(op, a, b=None):
 
 
 def fit_to_int(x, eps=1e-9):
+	"""
+	Convert x to int if x is close to an integer.
+	"""
     try:
         if abs(round(x) - x) <= eps:
             return round(x)
@@ -159,8 +172,11 @@ class Node:
     	return self._str_cache
 
     def _str(self):
+    	# Constant
         if self.op == OP_CONST:
             return str(self._value)
+
+        # Unary operator
         elif self.op in unary_operators:
             str_left = str(self.left)
 
@@ -169,10 +185,13 @@ class Node:
                 str_left = "(" + str_left + ")"
 
             return symbol_of_operator[self.op] % str_left
+
+        # Other operator
         else:
             str_left = str(self.left)
             str_right = str(self.right)
 
+            # Add brackets inside
             if need_brackets[self.op] \
             		and priority_of_operator[self.left.op] < priority_of_operator[self.op]:
                 str_left = "(" + str_left + ")"
@@ -183,16 +202,20 @@ class Node:
                     and not is_operator_commutative[self.op])):
                 str_right = "(" + str_right + ")"
 
+            # Render
             return symbol_of_operator[self.op] % (str_left, str_right)
 
 
 def enumerate_nodes(node_list, callback, max_depth):
+	# Found an expression
     if len(node_list) == 1:
         callback(node_list[0])
 
+    # Constrain maximum depth
     if max_depth == 0:
         return
 
+    # Non-unary operators
     for left, right in itertools.permutations(node_list, 2):
         new_node_list = node_list.copy()
         new_node_list.remove(left)
@@ -204,6 +227,7 @@ def enumerate_nodes(node_list, callback, max_depth):
             if not is_operator_commutative[op] and str(left) != str(right):
                 enumerate_nodes(new_node_list + [Node(left=right, right=left, op=op)], callback, max_depth-1)
 
+    # Unary operators
     for number in node_list:
         new_node_list = node_list.copy()
         new_node_list.remove(number)
