@@ -270,7 +270,7 @@ class CallbackAllTarget:
 
 
 def select_yes_no(prompt, default=False):
-    answer = input(prompt).lower()
+    answer = input(prompt).strip().lower()
     if answer == "y":
         return True
     if answer == "n":
@@ -280,7 +280,7 @@ def select_yes_no(prompt, default=False):
 
 def select_int(prompt, default):
     try:
-        return int(input(prompt))
+        return int(input(prompt).strip())
     except ValueError:
         return default
 
@@ -335,7 +335,8 @@ def main():
         else:
             callback = CallbackFindTarget(target=target)
 
-        inputs = [int(i) for i in input("Enter some numbers:").split(" ")]
+        inputs = [int(i) for i in input("Enter some numbers:").split(" ")
+        		  if i != ""]
         node_list = [Node(value=i) for i in inputs]
 
         print()
