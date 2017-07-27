@@ -65,6 +65,14 @@ is_operator_commutative = {OP_ADD: True,
                            OP_P: False}
 
 
+def permutation(n, k):
+    return math.factorial(n)/math.factorial(k)
+
+
+def combination(n, k):
+    return permutation(n, k)/math.factorial(n-k)
+
+
 def evaluate_operation(op, a, b=None):
     if op == OP_ADD: return a + b
     if op == OP_SUB: return a - b
@@ -77,13 +85,13 @@ def evaluate_operation(op, a, b=None):
         if op == OP_FACT and a < 10:
             return math.factorial(a)
 
-        if op == OP_C and a >= b and a < 10:
-            return len(set(itertools.combinations(range(a), b)))
+        if op == OP_C and 0 < b <= a <= 13:
+            return combination(a, b)
 
-        if op == OP_P and a >= b and a < 10:
-            return len(set(itertools.permutations(range(a), b)))
+        if op == OP_P and 0 < b <= a <= 13:
+            return permutation(a, b)
 
-        if op == OP_SQRT and a < 1000:
+        if op == OP_SQRT and a < 1000000:
             return math.sqrt(a)
 
         if op == OP_DIV: return a / b
