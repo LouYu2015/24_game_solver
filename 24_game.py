@@ -92,9 +92,9 @@ def combination(n, k):
 
 
 def evaluate_operation(op, a, b=None):
-	"""
-	Evaluate an operation on a and b.
-	"""
+    """
+    Evaluate an operation on a and b.
+    """
     if op == OP_ADD: return a + b
     if op == OP_SUB: return a - b
     if op == OP_MUL: return a * b
@@ -126,9 +126,9 @@ def evaluate_operation(op, a, b=None):
 
 
 def fit_to_int(x, eps=1e-9):
-	"""
-	Convert x to int if x is close to an integer.
-	"""
+    """
+    Convert x to int if x is close to an integer.
+    """
     try:
         if abs(round(x) - x) <= eps:
             return round(x)
@@ -167,12 +167,12 @@ class Node:
         return self._value
 
     def __str__(self):
-    	if self._str_cache is None:
-    		self._str_cache = self._str()
-    	return self._str_cache
+        if self._str_cache is None:
+            self._str_cache = self._str()
+        return self._str_cache
 
     def _str(self):
-    	# Constant
+        # Constant
         if self.op == OP_CONST:
             return str(self._value)
 
@@ -181,7 +181,7 @@ class Node:
             str_left = str(self.left)
 
             if need_brackets[self.op] \
-            		and priority_of_operator[self.left.op] < priority_of_operator[self.op]:
+                    and priority_of_operator[self.left.op] < priority_of_operator[self.op]:
                 str_left = "(" + str_left + ")"
 
             return symbol_of_operator[self.op] % str_left
@@ -193,13 +193,13 @@ class Node:
 
             # Add brackets inside
             if need_brackets[self.op] \
-            		and priority_of_operator[self.left.op] < priority_of_operator[self.op]:
+                    and priority_of_operator[self.left.op] < priority_of_operator[self.op]:
                 str_left = "(" + str_left + ")"
 
             if need_brackets[self.op] \
-            		and (priority_of_operator[self.right.op] < priority_of_operator[self.op] \
-                	or (priority_of_operator[self.right.op] == priority_of_operator[self.op]
-                    and not is_operator_commutative[self.op])):
+                    and (priority_of_operator[self.right.op] < priority_of_operator[self.op]
+                         or (priority_of_operator[self.right.op] == priority_of_operator[self.op]
+                             and not is_operator_commutative[self.op])):
                 str_right = "(" + str_right + ")"
 
             # Render
@@ -207,7 +207,7 @@ class Node:
 
 
 def enumerate_nodes(node_list, callback, max_depth):
-	# Found an expression
+    # Found an expression
     if len(node_list) == 1:
         callback(node_list[0])
 
@@ -238,6 +238,7 @@ def enumerate_nodes(node_list, callback, max_depth):
                 continue
 
             enumerate_nodes(new_node_list + [new_node], callback, max_depth-1)
+
 
 class CallbackFindTarget:
     def __init__(self, target):
@@ -360,7 +361,7 @@ def main():
             callback = CallbackFindTarget(target=target)
 
         inputs = [int(i) for i in input("Enter some numbers:").split(" ")
-        		  if i != ""]
+                  if i != ""]
         node_list = [Node(value=i) for i in inputs]
 
         print()
